@@ -1,0 +1,124 @@
+{
+  "channel_name": "indream",
+  "handle": "@indreamsleep",
+  "video": {
+    "width": 3840,
+    "height": 2160,
+    "fps": 24,
+    "loop_seconds": 30,
+    "outro_loop_seconds": 40,
+    "transition_intro_seconds": 4,
+    "transition_scene_seconds": 10,
+    "transition_outro_seconds": 12,
+    "crf": 21,
+    "maxrate": "9M",
+    "bufsize": "18M",
+    "preset": "slow",
+    "preview_width": 1280,
+    "preview_height": 720,
+    "preview_loop_seconds": 8,
+    "preview_voice_seconds": 150,
+    "preview_outro_seconds": 40
+  },
+  "audio": {
+    "voice_lufs_note": "Narration is left untouched; ambience is mixed relative to it.",
+    "ambience_reference_lufs": -30
+  },
+  "youtube": {
+    "category_id": "22",
+    "language": "en",
+    "made_for_kids": false,
+    "contains_synthetic_media": true,
+    "embeddable": true,
+    "public_stats_viewable": true,
+    "license": "youtube",
+    "notify_subscribers": false,
+    "playlist_id": null
+  },
+  "description": {
+    "welcome_line": "Welcome to indream. Where are you watching from tonight? Tell me in the comments, I love seeing where everyone is settling in from.",
+    "footer": "Subscribe to indream for a new sleep story every week.\n\nThis video is for relaxation and sleep. Please do not listen while driving or operating machinery.",
+    "disclosure": "Narration and visuals in this video were created with the help of AI tools.",
+    "base_hashtags": [
+      "#sleepstory",
+      "#relaxing",
+      "#indream"
+    ],
+    "base_tags": [
+      "indream",
+      "sleep story",
+      "bedtime story",
+      "relaxing sleep story",
+      "fall asleep fast",
+      "calm your mind",
+      "stop overthinking",
+      "sleep sounds",
+      "4k relaxing video"
+    ]
+  },
+  "thumbnail": {
+    "logo": "brand/logo_gold.png",
+    "font": "brand/fonts/CormorantGaramond.ttf",
+    "font_italic": "brand/fonts/CormorantGaramond-Italic.ttf",
+    "style": {
+      "_note": "The indream thumbnail look. Every video uses this, so the channel stays instantly recognisable. Change it here once and all future thumbnails follow. A job can only change its own content (picture, words, gold word), not the look.",
+      "title": {
+        "size": 0.17,
+        "wrap": 12,
+        "weight": 700,
+        "x": 0.045,
+        "y": 0.045,
+        "max_width": 0.5,
+        "color": [
+          255,
+          255,
+          255
+        ],
+        "accent_color": [
+          255,
+          196,
+          48
+        ],
+        "outline_color": [
+          30,
+          12,
+          4
+        ],
+        "glow_color": [
+          255,
+          170,
+          60
+        ],
+        "glow_soft_color": [
+          255,
+          215,
+          150
+        ],
+        "case": "title"
+      },
+      "subtitle": {
+        "size": 0.058,
+        "weight": 600,
+        "tracking": 0.004,
+        "color": [
+          255,
+          226,
+          160
+        ],
+        "kind": "sleep story",
+        "separator": " · ",
+        "case": "title"
+      },
+      "logo": {
+        "pos": "top-right",
+        "width": 0.13
+      },
+      "grade": {
+        "bloom": 0.75,
+        "contrast": 1.06,
+        "title_shade": true
+      },
+      "_case_options": "title = Fall Asleep by the Fire | words = Fall Asleep By The Fire | lower = fall asleep by the fire | upper = FALL ASLEEP BY THE FIRE"
+    }
+  }
+}

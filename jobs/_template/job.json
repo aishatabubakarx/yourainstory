@@ -1,0 +1,257 @@
+{
+  "slug": "my-new-video",
+  "title_short": "TODO title",
+  "audio": {
+    "source": "release",
+    "release": "my-new-video",
+    "file": "narration.wav"
+  },
+  "total_hours": 4.0,
+  "ambience": {
+    "under_voice_db": -4,
+    "outro_db": 4
+  },
+  "scenes": [
+    {
+      "name": "Snowy road",
+      "chapter": "Walking the snowy path",
+      "image": "road.jpg",
+      "ambience": {
+        "wind": 0.9,
+        "hush": 0.7
+      },
+      "effects": [
+        {
+          "type": "flicker",
+          "box": [
+            0.14,
+            0.3,
+            0.25,
+            0.52
+          ],
+          "amp": 0.12,
+          "rate": 2.0,
+          "glow": 0.12
+        },
+        {
+          "type": "flicker",
+          "box": [
+            0.62,
+            0.05,
+            0.73,
+            0.3
+          ],
+          "amp": 0.04,
+          "rate": 0.1,
+          "threshold": 0.5,
+          "glow": 0.0
+        },
+        {
+          "type": "twinkle",
+          "box": [
+            0.35,
+            0.0,
+            1.0,
+            0.35
+          ],
+          "count": 60
+        },
+        {
+          "type": "snow",
+          "count": 800,
+          "wind": 0.5
+        }
+      ]
+    },
+    {
+      "name": "Cabin outside",
+      "chapter": "Arriving at the cabin",
+      "image": "cabin.jpg",
+      "ambience": {
+        "wind": 0.75,
+        "hush": 0.55
+      },
+      "effects": [
+        {
+          "type": "sway",
+          "box": [
+            0.575,
+            0.0,
+            0.68,
+            0.27
+          ],
+          "anchor": "bottom",
+          "amp": 0.18,
+          "rate": 0.1,
+          "wavelength": 0.55
+        },
+        {
+          "type": "flicker",
+          "box": [
+            0.44,
+            0.36,
+            0.8,
+            0.8
+          ],
+          "amp": 0.06,
+          "threshold": 0.45,
+          "glow": 0.02
+        },
+        {
+          "type": "twinkle",
+          "box": [
+            0.0,
+            0.0,
+            1.0,
+            0.42
+          ],
+          "count": 90
+        },
+        {
+          "type": "snow",
+          "count": 720,
+          "wind": 0.35
+        }
+      ]
+    },
+    {
+      "name": "Fireplace room",
+      "chapter": "By the fireplace",
+      "image": "interior.jpg",
+      "ambience": {
+        "fire": 1.0,
+        "wind": 0.35,
+        "hush": 0.25
+      },
+      "effects": [
+        {
+          "type": "fire",
+          "kind": "candle",
+          "box": [
+            0.262,
+            0.213,
+            0.284,
+            0.252
+          ],
+          "base": 0.2444,
+          "height": 0.0178,
+          "threshold": 0.6
+        },
+        {
+          "type": "fire",
+          "kind": "candle",
+          "box": [
+            0.287,
+            0.224,
+            0.308,
+            0.266
+          ],
+          "base": 0.2592,
+          "height": 0.022,
+          "threshold": 0.6
+        },
+        {
+          "type": "fire",
+          "kind": "candle",
+          "box": [
+            0.248,
+            0.745,
+            0.272,
+            0.79
+          ],
+          "base": 0.7813,
+          "height": 0.029,
+          "threshold": 0.6,
+          "light_radius": 0.06
+        },
+        {
+          "type": "fire",
+          "box": [
+            0.075,
+            0.42,
+            0.235,
+            0.7
+          ],
+          "base": 0.64,
+          "height": 0.2,
+          "light_radius": 0.22,
+          "embers": 7
+        },
+        {
+          "type": "steam",
+          "origin": [
+            0.322,
+            0.69
+          ],
+          "rise": 0.16,
+          "drift": 0.01,
+          "sway": 0.006,
+          "size0": 0.003,
+          "size1": 0.01,
+          "count": 24,
+          "cycles": 2,
+          "alpha": 0.14
+        },
+        {
+          "type": "snow",
+          "mask": {
+            "box": [
+              0.4,
+              0.03,
+              0.96,
+              0.58
+            ]
+          },
+          "count": 520,
+          "size": 0.75,
+          "wind": 0.15
+        }
+      ]
+    }
+  ],
+  "outro": {
+    "ambience": {
+      "wind": 0.55,
+      "hush": 0.5
+    }
+  },
+  "outro_chapter": "Deep sleep soundscape (no narration)",
+  "thumbnail": {
+    "scene": 2,
+    "title": "TODO short title",
+    "focus": [
+      0.5,
+      0.5
+    ],
+    "zoom": 1.1,
+    "accent": "TODO one gold word"
+  },
+  "publish": {
+    "privacy": "private",
+    "publish_after_hours": 24
+  },
+  "metadata": {
+    "title": "TODO: keyword-rich title under 100 characters",
+    "hook": "TODO: first two lines viewers see, include the main keyword",
+    "about": "TODO: what the story is, who it helps, how to use it.",
+    "keywords_paragraph": "A cozy cabin sleep story, relaxing bedtime story for adults, calm snowstorm ambience, fireplace and snow sounds, deep sleep and relaxation.",
+    "hashtags": [
+      "#sleepstory",
+      "#cozycabin",
+      "#snowstorm"
+    ],
+    "tags": [
+      "cozy cabin sleep story",
+      "gentle snowstorm",
+      "snowstorm sleep sounds",
+      "fireplace sounds for sleeping",
+      "bedtime story for adults",
+      "sleep story for deep sleep",
+      "cabin ambience",
+      "winter sleep story",
+      "relaxing story to fall asleep",
+      "snow and fireplace"
+    ],
+    "pinned_comment": "Welcome to indream. Where are you watching from tonight? Tell me in the replies, and sleep well."
+  }
+}
