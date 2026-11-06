@@ -1,0 +1,66 @@
+name: Unzip
+on:
+  # a zip is pushed/uploaded to the repo (any folder)
+  push:
+    paths:
+      - '**.zip'
+      - '**.ZIP'
+  # run by hand to unzip any zips already sitting in the repo
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: unzip
+  cancel-in-progress: false
+
+env:
+  # "folder" = extract into a folder named after the zip (safe, nothing gets overwritten)
+  # "root"   = extract into the same folder the zip is in (overwrites files with the same name)
+  EXTRACT_MODE: folder
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Needed only if a zip contains files under .github/workflows/.
+          # Add a personal access token (repo + workflow scope) as secret CLEANUP_PAT.
+          token: ${{ secrets.CLEANUP_PAT || github.token }}
+
+      - name: Unzip every zip in the repository
+        run: |
+          : > /tmp/failed.txt
+          for pass in 1 2 3 4 5; do          # extra passes handle zips inside zips
+            mapfile -d '' zips < <(find . -path ./.git -prune -o -type f -iname '*.zip' -print0)
+            handled=0
+            for z in "${zips[@]}"; do
+              grep -Fxq -- "$z" /tmp/failed.txt && continue
+              dir=$(dirname "$z"); base=$(basename "$z"); name="${base%.*}"
+              if [ "$EXTRACT_MODE" = "root" ]; then dest="$dir"; else dest="$dir/$name"; fi
+              mkdir -p "$dest"
+              if unzip -o -q "$z" -d "$dest" -x '__MACOSX/*' '*/.DS_Store'; then
+                rm -f "$z"
+                echo "unzipped $z -> $dest"
+              else
+                echo "FAILED to unzip $z (damaged or password protected), leaving it in place"
+                echo "$z" >> /tmp/failed.txt
+              fi
+              handled=1
+            done
+            [ "$handled" -eq 0 ] && break
+          done
+
+      - name: Commit extracted files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "nothing changed"; else
+            git commit -m "Unzip archives"
+            git pull --rebase -q || true
+            git push
+          fi
+          if [ -s /tmp/failed.txt ]; then echo "Some zips could not be unzipped:"; cat /tmp/failed.txt; exit 1; fi

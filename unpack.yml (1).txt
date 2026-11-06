@@ -1,0 +1,88 @@
+name: Unpack to root
+on:
+  workflow_dispatch:
+    inputs:
+      file:
+        description: Name of the folder or file (for example stock-render-kit (4))
+        required: true
+permissions:
+  contents: write
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CLEANUP_PAT || github.token }}
+      - name: Bring contents to root and delete the original
+        env:
+          NAME: ${{ inputs.file }}
+          HAS_PAT: ${{ secrets.CLEANUP_PAT != '' }}
+        run: |
+          set -euo pipefail
+          shopt -s dotglob nullglob
+
+          norm() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]'; }
+
+          # 1. Find it: exact path first, then a forgiving match on the name (folders and files)
+          WANT=$(norm "$(basename "$NAME")")
+          SRC=""
+          if [ -e "$NAME" ] && [ "$NAME" != "." ] && [ "$NAME" != ".git" ]; then
+            SRC="$NAME"
+          else
+            EXACT=(); PREFIX=()
+            while IFS= read -r -d '' f; do
+              base=$(norm "$(basename "$f")")
+              if [ "$base" = "$WANT" ]; then EXACT+=("$f")
+              elif [[ "$base" == "$WANT"* ]]; then PREFIX+=("$f"); fi
+            done < <(find . -mindepth 1 -path ./.git -prune -o -print0)
+            if [ ${#EXACT[@]} -eq 1 ]; then SRC="${EXACT[0]}"
+            elif [ ${#EXACT[@]} -eq 0 ] && [ ${#PREFIX[@]} -eq 1 ]; then SRC="${PREFIX[0]}"
+            elif [ $(( ${#EXACT[@]} + ${#PREFIX[@]} )) -gt 1 ]; then
+              echo "More than one match for '$NAME'. Type the full name of one of these:"
+              printf '%s\n' "${EXACT[@]}" "${PREFIX[@]}"; exit 1
+            else
+              echo "Not found: $NAME"
+              echo "Top level of the repo:"; ls -A | head -50
+              exit 1
+            fi
+          fi
+          SRC="${SRC#./}"
+          echo "Using: $SRC"
+
+          # 2. Take the contents out of the folder, or extract the archive, or move the file
+          TMP=$(mktemp -d)
+          if [ -d "$SRC" ]; then
+            cp -a "$SRC"/. "$TMP"/
+            rm -rf "$SRC"
+          else
+            case "${SRC,,}" in
+              *.zip)            unzip -q "$SRC" -d "$TMP" ;;
+              *.tar.gz|*.tgz)   tar -xzf "$SRC" -C "$TMP" ;;
+              *.tar.bz2|*.tbz2) tar -xjf "$SRC" -C "$TMP" ;;
+              *.tar)            tar -xf "$SRC" -C "$TMP" ;;
+              *)
+                if [ "$(dirname "$SRC")" = "." ]; then
+                  echo "$SRC is already in the root. Nothing to do."; exit 0
+                fi
+                cp "$SRC" "$TMP/" ;;
+            esac
+            rm -f "$SRC"
+          fi
+          rm -rf "$TMP/__MACOSX"
+
+          # 3. Without the CLEANUP_PAT secret GitHub blocks workflow files, so park them in a normal folder
+          if [ "$HAS_PAT" != "true" ] && [ -d "$TMP/.github/workflows" ]; then
+            mkdir -p workflow-files-to-add-manually
+            mv "$TMP"/.github/workflows/* workflow-files-to-add-manually/
+            rmdir "$TMP/.github/workflows" 2>/dev/null || true
+            echo "::notice::CLEANUP_PAT secret not found. Workflow files were put in workflow-files-to-add-manually/."
+          fi
+
+          # 4. Copy everything to the root, then commit and push
+          cp -a "$TMP"/. .
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Move $SRC to root" || { echo "No changes to commit"; exit 0; }
+          git push
