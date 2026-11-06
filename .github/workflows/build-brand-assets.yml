@@ -1,0 +1,45 @@
+name: Build brand assets (intro + outro, run once)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL || true
+          df -h /
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ffmpeg and Python packages
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y ffmpeg
+          pip install -r requirements.txt
+
+      - name: Render the 10 second 4K intro and the starry outro loop
+        run: python -m engine.cli brand --force
+
+      - name: Save them to the "brand-assets" release so every video can reuse them
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view brand-assets >/dev/null 2>&1 || gh release create brand-assets --title "brand-assets" --notes "Reusable intro and outro loop. Rebuilt by the Build brand assets workflow."
+          gh release upload brand-assets build/brand_full/intro.ts build/brand_full/outro_loop.ts --clobber
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: brand-debug
+          path: build/brand_full/debug/
+          if-no-files-found: ignore
