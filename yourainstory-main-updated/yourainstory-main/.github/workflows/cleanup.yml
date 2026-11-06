@@ -1,0 +1,56 @@
+name: Clean repository
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Type DELETE to confirm
+        required: true
+      dry_run:
+        description: Dry run (only list what would be deleted)
+        type: boolean
+        default: true
+      keep_records:
+        description: Keep upload records (.adobe_uploaded / .shutterstock_uploaded) so clips are not uploaded twice
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # A PAT with "repo" + "workflow" scope is needed to delete other workflow files.
+          # Add it as a secret named CLEANUP_PAT. Falls back to the normal token otherwise.
+          token: ${{ secrets.CLEANUP_PAT || github.token }}
+
+      - name: Check confirmation
+        if: ${{ inputs.confirm != 'DELETE' }}
+        run: |
+          echo "Confirmation text was not DELETE. Nothing done."
+          exit 1
+
+      - name: Work out what to delete
+        run: |
+          KEEP='(^|/)(stock_push\.py|stock-upload\.yml|unpack\.yml|unzip\.yml|cleanup\.yml)$'
+          if [ "${{ inputs.keep_records }}" = "true" ]; then
+            KEEP="$KEEP|^\.adobe_uploaded/|^\.shutterstock_uploaded/"
+          fi
+          git ls-files | grep -v -E "$KEEP" > /tmp/to_delete.txt || true
+          echo "Files that will be deleted: $(wc -l < /tmp/to_delete.txt)"
+          cat /tmp/to_delete.txt
+          echo "---- Files kept ----"
+          git ls-files | grep -E "$KEEP" || true
+
+      - name: Delete and push
+        if: ${{ !inputs.dry_run }}
+        run: |
+          if [ ! -s /tmp/to_delete.txt ]; then echo "nothing to delete"; exit 0; fi
+          tr '\n' '\0' < /tmp/to_delete.txt | xargs -0 git rm -q --
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "Clean repository"
+          git push
